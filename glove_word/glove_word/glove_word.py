@@ -10,6 +10,7 @@ print (sys.version)#3.6
 dict=[]
 #dict=Glove.load_stanford("test.txt")
 dict=Glove.load_stanford("glove.6B.50d.txt")
+#dict=Glove.load_stanford("glove.twitter.27B.25d.txt")
 
 
 corpus_words=dict.dictionary.keys()
