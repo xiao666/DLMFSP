@@ -10,32 +10,60 @@ from keras.layers import SpatialDropout1D
 from keras.layers.core import Dense, Dropout, Activation, Lambda
 from keras.layers.embeddings import Embedding
 from sklearn.metrics import accuracy_score
+from keras import optimizers
+
+#text preprocessing
+from nltk import word_tokenize
+from nltk.corpus import stopwords
+
+#import keras.backend as K #calculate gradient
 import sys
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
+
+
 #lstm
+
+#remove stop_words
+stop = set(stopwords.words('english'))
+#print (stop)
+sentence = "this is a foo bar sentence"
+
+
+for i in sentence.lower().split():
+    if i not in stop:print (i)
+
+
 
 #data import
 data = pd.read_csv('Combined_News_DJIA.csv')
+
 train = data[data['Date'] < '2015-01-01']
 test = data[data['Date'] > '2014-12-31']
+
+#train = data[data['Date'] < '2015-06-01']
+#test = data[data['Date'] > '2015-6-01']
 
 #date process
 trainheadlines = []
 for row in range(0,len(train.index)):
     trainheadlines.append(' '.join(str(x) for x in train.iloc[row,2:27]))
-basicvectorizer = CountVectorizer()
-basictrain = basicvectorizer.fit_transform(trainheadlines)
-print(basictrain.shape)
+#basicvectorizer = CountVectorizer()
+#basictrain = basicvectorizer.fit_transform(trainheadlines)
+#print(basictrain.shape)
 #(1611 days,31675 words)
+print(len(trainheadlines),len(trainheadlines[0]))
 
 testheadlines = []
 for row in range(0,len(test.index)):
     testheadlines.append(' '.join(str(x) for x in test.iloc[row,2:27]))
 
+
+
+'''
 #lstm
 max_features = 10000
-maxlen = 500
+maxlen = 200
 batch_size = 32
 nb_classes = 2
 
@@ -60,24 +88,27 @@ Y_test = np_utils.to_categorical(y_test, nb_classes)
 print('X_train shape:', X_train.shape)
 print('X_test shape:', X_test.shape)
 
-
+'''
+'''
 #modeling
-
-#f = open("output.txt", "w") 
 
 print('Build model...')
 model = Sequential()
 model.add(Embedding(max_features, 128))
+
 model.add(SpatialDropout1D(0.2))
+#model.add(Dropout(0.5))
 model.add(LSTM(128,dropout=0.2, recurrent_dropout=0.2))
+#,                dropout=0.5, recurrent_dropout=0.5)
 model.add(Dense(nb_classes))
-model.add(Activation('softmax'))
+model.add(Activation('softmax'))#softmax
 
 model.summary()#print the model
 
 model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
+#'binary_crossentropy''mean_squared_error' adam
 
 print('Train...')
 model.fit(X_train, Y_train, batch_size=batch_size, epochs=3,
@@ -89,13 +120,12 @@ print('Test accuracy:', acc)
 
 
 print("Generating test predictions...")
-preds15 = model.predict_classes(X_test, verbose=0)
-acc15 = accuracy_score(test['Label'], preds15)
+preds = model.predict_classes(X_test, verbose=0)
+acc = accuracy_score(test['Label'], preds)
 
-print('prediction accuracy: ', acc15)
+print('prediction accuracy: ', acc)
 
-#f.close()
-
+'''
 print ("end")
 
 os.system('pause')

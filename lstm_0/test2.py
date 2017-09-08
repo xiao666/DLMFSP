@@ -1,48 +1,66 @@
-import numpy as np
-import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer
-from keras.layers.recurrent import LSTM
+#text preprocessing
+from nltk import word_tokenize
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import CountVectorizer,HashingVectorizer
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing import sequence
 from keras.utils import np_utils
+import numpy as np
+import os
+import pandas as pd
+
+from keras.layers.recurrent import LSTM
 from keras.models import Sequential
 from keras.layers import SpatialDropout1D
 from keras.layers.core import Dense, Dropout, Activation, Lambda
 from keras.layers.embeddings import Embedding
 from sklearn.metrics import accuracy_score
 from keras import optimizers
-
-#import keras.backend as K #calculate gradient
-import sys
-import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 
-#lstm
 
-#data import
+stopwords = set(stopwords.words('english'))
+print (len(stopwords))
+
 data = pd.read_csv('Combined_News_DJIA.csv')
-
 train = data[data['Date'] < '2015-01-01']
 test = data[data['Date'] > '2014-12-31']
 
-#train = data[data['Date'] < '2015-06-01']
-#test = data[data['Date'] > '2015-6-01']
+headlines=[[0 for x in range(25)] for y in range(len(data.index))]#len(data.index)
 
-#date process
-trainheadlines = []
-for row in range(0,len(train.index)):
-    trainheadlines.append(' '.join(str(x) for x in train.iloc[row,2:27]))
-#basicvectorizer = CountVectorizer()
-#basictrain = basicvectorizer.fit_transform(trainheadlines)
-#print(basictrain.shape)
-#(1611 days,31675 words)
+#data = data[data['Date'] < '2015-01-01']
+for row in range(len(data.index)):#len(data.index)
+    for col in range(25):
+        temp0=str(data.iloc[row,(col+2)])
+        temp0=temp0.lower()
+        temp=HashingVectorizer().build_tokenizer()(temp0)
+        #=========code below remove stopwords==================
+        #temp=[s for s in temp if s not in stopwords]
+        headlines[row][col]=temp
 
-testheadlines = []
-for row in range(0,len(test.index)):
-    testheadlines.append(' '.join(str(x) for x in test.iloc[row,2:27]))
+#"b""Georgia 'downs two Russian warplanes' as countries move to brink of war"""
+#b"The commander of a Navy air reconnaissance squadron that provides the President and the defense secretary the airborne ability to command the nation's nuclear weapons has been relieved of duty"
+print ("data shape:",data.shape)
+print ("list shape:",(len(headlines),len(headlines[0])))
 
-#lstm
+print (headlines[0][0])
+print (headlines[3][8])
+
+merged_headlines=[]
+for rows in range(len(headlines)):
+    temp1=[]
+    for cols in range(25):
+        temp1=temp1+headlines[rows][cols]
+    merged_headlines.append(' '.join(word for word in temp1))
+
+print (len(merged_headlines),len(merged_headlines[0]),len(merged_headlines[1]))#num_days,length of N0.0 string, length of NO.1 string
+#1984,244,170
+print(merged_headlines[0])
+#print (str(merged_headlines[0]))
+merged_train=merged_headlines[0:1611]
+merged_test=merged_headlines[1611:1989]
+
 max_features = 10000
 maxlen = 200
 batch_size = 32
@@ -50,11 +68,9 @@ nb_classes = 2
 
 # vectorize the text samples into a 2D integer tensor
 tokenizer = Tokenizer(num_words=max_features)
-tokenizer.fit_on_texts(trainheadlines)
-sequences_train = tokenizer.texts_to_sequences(trainheadlines)
-sequences_test = tokenizer.texts_to_sequences(testheadlines)
-
-print (len(sequences_train[0]))#technical try
+tokenizer.fit_on_texts(merged_train)
+sequences_train = tokenizer.texts_to_sequences(merged_train)
+sequences_test = tokenizer.texts_to_sequences(merged_test)
 
 print('Pad sequences (samples x time)')
 X_train = sequence.pad_sequences(sequences_train, maxlen=maxlen)
@@ -72,14 +88,13 @@ print('X_train shape:', X_train.shape)
 print('X_test shape:', X_test.shape)
 
 
-#modeling
-
+#LSTM model
 print('Build model...')
 model = Sequential()
 model.add(Embedding(max_features, 128))
 
 model.add(SpatialDropout1D(0.2))
-#model.add(Dropout(0.5))
+
 model.add(LSTM(128,dropout=0.2, recurrent_dropout=0.2))
 #,                dropout=0.5, recurrent_dropout=0.5)
 model.add(Dense(nb_classes))
@@ -107,6 +122,7 @@ acc = accuracy_score(test['Label'], preds)
 
 print('prediction accuracy: ', acc)
 
-print ("end")
 
+
+print ("end")
 os.system('pause')

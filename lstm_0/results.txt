@@ -1,0 +1,44 @@
+#1. NO preprocessing
+Train...
+Train on 1611 samples, validate on 378 samples
+Epoch 1/5
+1611/1611 [==============================] - 33s - loss: 0.6916 - acc: 0.5369 - val_loss: 0.6920 - val_acc: 0.5132
+Epoch 2/5
+1611/1611 [==============================] - 31s - loss: 0.6252 - acc: 0.6741 - val_loss: 0.7322 - val_acc: 0.5423
+Epoch 3/5
+1611/1611 [==============================] - 33s - loss: 0.3523 - acc: 0.8678 - val_loss: 0.8534 - val_acc: 0.5370
+Epoch 4/5
+1611/1611 [==============================] - 33s - loss: 0.1022 - acc: 0.9721 - val_loss: 1.2540 - val_acc: 0.5661
+Epoch 5/5
+1611/1611 [==============================] - 32s - loss: 0.0274 - acc: 0.9969 - val_loss: 1.5331 - val_acc: 0.5529
+378/378 [==============================] - 1s
+Test score: 1.53309273089
+Test accuracy: 0.55291005291
+Generating test predictions...
+prediction accuracy:  0.55291005291
+end
+
+
+
+
+#2. remove stopwords from NLTK stopwords corpus
+Train...
+Train on 1611 samples, validate on 378 samples
+Epoch 1/5
+1611/1611 [==============================] - 34s - loss: 0.6910 - acc: 0.5264 - val_loss: 0.6917 - val_acc: 0.5238
+Epoch 2/5
+1611/1611 [==============================] - 33s - loss: 0.6148 - acc: 0.7132 - val_loss: 0.7032 - val_acc: 0.5132
+Epoch 3/5
+1611/1611 [==============================] - 30s - loss: 0.3105 - acc: 0.9044 - val_loss: 0.9807 - val_acc: 0.5106
+Epoch 4/5
+1611/1611 [==============================] - 32s - loss: 0.0581 - acc: 0.9857 - val_loss: 1.2688 - val_acc: 0.5079
+Epoch 5/5
+1611/1611 [==============================] - 30s - loss: 0.0144 - acc: 0.9969 - val_loss: 1.5206 - val_acc: 0.5185
+378/378 [==============================] - 1s
+Test score: 1.52056528778
+Test accuracy: 0.518518520095
+Generating test predictions...
+prediction accuracy:  0.518518518519
+end
+
+
