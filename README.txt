@@ -9,10 +9,10 @@ old_results: results from historical version models
 
 Original DeepMoji project (python 2.7): https://github.com/bfelbo/DeepMoji
 We modified DeepMoji for python 3.6 at: 
-
+https://github.com/xiao666/DeepMoji3.6
 
 Codes for Financial Sentiment Analysis at another repository:
-
+https://github.com/xiao666/DeepFSA
 
 
 Some Models for Financial Sentiment Analysis saved at:
